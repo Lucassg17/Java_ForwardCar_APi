@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
         features ={
                 "src/test/resources/features/forwardCar.feature"
         },
-        tags = "@Teste001"
+        tags = "@Teste002"
 )
 public class RunnerAllTests {
 }

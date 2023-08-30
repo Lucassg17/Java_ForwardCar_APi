@@ -1,4 +1,4 @@
-package Constantes;
+package AtributosJson;
 
 public class AtributosJsonRegistro {
     public static final String firstName = "firstname";

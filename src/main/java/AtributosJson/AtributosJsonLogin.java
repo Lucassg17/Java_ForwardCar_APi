@@ -1,6 +1,6 @@
-package Constantes;
+package AtributosJson;
 
 public class AtributosJsonLogin {
     public static final String userName = "username";
-    public static final String passWord = "teste123";
+    public static final String passWord = "password";
 }
