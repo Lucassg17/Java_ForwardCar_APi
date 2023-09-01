@@ -16,7 +16,6 @@ public class Excel {
     public static XSSFWorkbook wb;
     public static XSSFSheet ws;
     public static XSSFRow row;
-    public static final String caminho = "C:\\Users\\Lucas Gomes\\RestAssured\\MassaDados_ApiForwardCar";
 
     private enum massaRegistro{
         FIRSTNAME,
@@ -52,13 +51,13 @@ public class Excel {
     public static int getCellDadosCriandoRegistro(String xlFile, String xlSheet) throws Exception {
         DataFormatter formatter = new DataFormatter();
 
-        fi = new FileInputStream(caminho + "\\" + xlFile);
+        fi = new FileInputStream(Hooks.SETUP.getCaminho() + "\\" + xlFile);
         wb = new XSSFWorkbook(fi);
         ws = wb.getSheet(xlSheet);
 
         int rowCount = ws.getLastRowNum();
 
-        PrintWriter arq = ArquivoTxt.abrirArquivo(caminho, "Dados_Excel-criarRegistro");
+        PrintWriter arq = ArquivoTxt.abrirArquivo(Hooks.SETUP.getCaminho(), "Dados_Excel-criarRegistro");
 
         for(int i = 1; i <= rowCount; i++) {
             row = ws.getRow(i);
@@ -85,13 +84,13 @@ public class Excel {
     public static int getCellDadosCriandoLogin(String xlFile, String xlSheet) throws Exception {
         DataFormatter formatter = new DataFormatter();
 
-        fi = new FileInputStream(caminho + "\\" + xlFile);
+        fi = new FileInputStream(Hooks.SETUP.getCaminho() + "\\" + xlFile);
         wb = new XSSFWorkbook(fi);
         ws = wb.getSheet(xlSheet);
 
         int rowCount = ws.getLastRowNum();
 
-        PrintWriter arq = ArquivoTxt.abrirArquivo(caminho, "Dados_Excel-criarLogin");
+        PrintWriter arq = ArquivoTxt.abrirArquivo(Hooks.SETUP.getCaminho(), "Dados_Excel-criarLogin");
 
         for(int i = 1; i <= rowCount; i++) {
             row = ws.getRow(i);
@@ -117,13 +116,13 @@ public class Excel {
     public static int getCellDadosCriandoEmprestimo(String xlFile, String xlSheet) throws Exception {
         DataFormatter formatter = new DataFormatter();
 
-        fi = new FileInputStream(caminho + "\\" + xlFile);
+        fi = new FileInputStream(Hooks.SETUP.getCaminho() + "\\" + xlFile);
         wb = new XSSFWorkbook(fi);
         ws = wb.getSheet(xlSheet);
 
         int rowCount = ws.getLastRowNum();
 
-        PrintWriter arq = ArquivoTxt.abrirArquivo(caminho, "Dados_Excel-criarEmprestimo");
+        PrintWriter arq = ArquivoTxt.abrirArquivo(Hooks.SETUP.getCaminho(), "Dados_Excel-criarEmprestimo");
 
         for(int i = 1; i <= rowCount; i++) {
             row = ws.getRow(i);

@@ -32,7 +32,7 @@ public class ArquivoTxt {
 
     public static String lerArquivo(String busca, String arquivoTxt){
         try {
-            FileReader arq = new FileReader(Excel.caminho + "\\" + arquivoTxt);
+            FileReader arq = new FileReader(Hooks.SETUP.getCaminho() + "\\" + arquivoTxt);
             BufferedReader lerArq = new BufferedReader(arq);
 
             String linha = lerArq.readLine(); // lê a primeira linha

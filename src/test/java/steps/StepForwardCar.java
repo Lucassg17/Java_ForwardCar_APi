@@ -87,6 +87,6 @@ public class StepForwardCar {
     @Entao("valido que meu login foi criado com sucesso")
     public void validoQueMeuLoginFoiCriadoComSucesso() {
         resultadoPostLogin.then().log().all();
-        Assert.assertEquals(resultadoPostLogin.jsonPath().getString(AtributosJsonLogin.userName), "lucasgsilva");
+        Assert.assertEquals(resultadoPostLogin.jsonPath().getString(AtributosJsonLogin.userName), "lucassilva");
     }
 }

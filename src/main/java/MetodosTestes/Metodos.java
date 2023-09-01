@@ -5,6 +5,8 @@ import AtributosJson.AtributosJsonLogin;
 import AtributosJson.AtributosJsonRegistro;
 import EndPoints.EndPoints;
 import Utils.ArquivoTxt;
+import Utils.Hooks;
+import constants.Setup;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.json.JSONObject;
@@ -26,7 +28,7 @@ public class Metodos {
         Response modelo =
                 given()
                         .when()
-                        .get(uri + EndPoints.modelo)
+                        .get(Hooks.SETUP.getUrlModelo())
                         .then()
                         .extract().response();
 
@@ -37,7 +39,7 @@ public class Metodos {
         Response fabrica =
                 given()
                         .when()
-                        .get(uri + EndPoints.fabrica)
+                        .get(Hooks.SETUP.getUrlFabrica())
                         .then()
                         .extract().response();
 
@@ -50,7 +52,7 @@ public class Metodos {
                         .contentType(ContentType.JSON)
                         .body(geraCorpoRegistro(linhasDoArquivo))
                         .when()
-                        .post(uri + EndPoints.registro)
+                        .post(Hooks.SETUP.getUrlRegistro())
                         .then()
                         .extract().response();
 
@@ -63,7 +65,7 @@ public class Metodos {
                         .contentType(ContentType.JSON)
                         .body(geraCorpoLogin(linhasDoArquivo))
                         .when()
-                        .post(uri + EndPoints.login)
+                        .post(Hooks.SETUP.getUrlLogin())
                         .then()
                         .extract().response();
 
@@ -81,7 +83,7 @@ public class Metodos {
                         .body(geraCorpoEmprestimo(linhasDoArquivo))
                         .contentType(ContentType.JSON)
                         .when()
-                        .post(uri + EndPoints.emprestimo)
+                        .post(Hooks.SETUP.getUrlEmprestimo())
                         .then()
                         .extract().response();
 
@@ -95,7 +97,7 @@ public class Metodos {
                 given()
                         .headers(token)
                         .when()
-                        .get(uri + EndPoints.emprestimo)
+                        .get(Hooks.SETUP.getUrlEmprestimo())
                         .then()
                         .extract().response();
 
