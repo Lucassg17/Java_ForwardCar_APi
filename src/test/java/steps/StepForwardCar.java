@@ -1,5 +1,6 @@
 package steps;
 
+import AtributosJson.AtributosJsonEmprestimo;
 import AtributosJson.AtributosJsonFabrica;
 import AtributosJson.AtributosJsonLogin;
 import MetodosTestes.Metodos;
@@ -22,7 +23,6 @@ public class StepForwardCar {
     public static int linhas;
     Response resultadoGetEmprestimo;
     Response resultadoPostLogin;
-    Response resultadoGetFabrica;
     Response resultadoPostEmprestimo;
 
     /////////////////@Teste001 @%ForwardCar/////////////////
@@ -31,7 +31,7 @@ public class StepForwardCar {
     public void queCrioUmRegistro(DataTable dataTable) throws Exception {
         list = dataTable.asMaps(String.class, String.class);
         linhas = Excel.getCellDadosCriandoRegistro(list.get(0).get("planilha"), list.get(0).get("aba"));
-        Metodos.geraRegistro();
+        Metodos.geraRegistro(linhas);
     }
 
     @Quando("crio meu login")
@@ -43,15 +43,15 @@ public class StepForwardCar {
     @E("envio os dados para realizar um metodo Post em Emprestimo")
     public void envioOsDadosParaRealizarUmMetodoPostEmEmprestimo(DataTable dataTable) throws Exception {
         list = dataTable.asMaps(String.class, String.class);
-        Excel.getCellDadosCriandoEmprestimo(list.get(0).get("planilha"), list.get(0).get("aba"));
-        resultadoPostEmprestimo = Metodos.recebeTokenERealizaPostEmprestimo();
+        linhas = Excel.getCellDadosCriandoEmprestimo(list.get(0).get("planilha"), list.get(0).get("aba"));
+        resultadoPostEmprestimo = Metodos.recebeTokenERealizaPostEmprestimo(linhas);
     }
 
     @Entao("confirmo que meu post foi feito com sucesso validando o retorno do meu body")
     public void confirmoQueMeuPostFoiFeitoComSucessoValidandoORetornoDoMeuBody() {
         resultadoPostEmprestimo.then()
-                .log().all()
-                .body(containsString("status: accepted"));
+                                    .log().all()
+                                    .body(containsString("status: accepted"));
     }
 
     /////////////////@Teste002 @%ForwardCar/////////////////
@@ -60,49 +60,33 @@ public class StepForwardCar {
     public void realizoOLogin(DataTable dataTable) throws Exception {
         list = dataTable.asMaps(String.class, String.class);
         Excel.getCellDadosCriandoLogin(list.get(0).get("planilha"), list.get(0).get("aba"));
-        //Metodos.realizaLogin();
     }
 
-    @E("envio um metodo Get pata Emprestimo")
-    public void envioUmMetodoGetPataEmprestimo() {
-        resultadoGetEmprestimo = Metodos.recebeEmprestimoCriadoERealizaGetEmprestimo();
+    @E("envio um metodo Get para Emprestimo")
+    public void envioUmMetodoGetParaEmprestimo(DataTable dataTable) throws Exception {
+        list = dataTable.asMaps(String.class, String.class);
+        linhas = Excel.getCellDadosCriandoEmprestimo(list.get(0).get("planilha"), list.get(0).get("aba"));
+        resultadoGetEmprestimo = Metodos.recebeEmprestimoCriadoERealizaGetEmprestimo(linhas);
     }
 
-    @Entao("ao enviar uma requisicao Get para Emprestimos valido que a acao ocorreu com sucesso")
-    public void aoEnviarUmaRequisicaoGetParaEmprestimosValidoQueAAcaoOcorreuComSucesso() {
-        //resultadoGetEmprestimo.then().log().all();
-        //Assert.assertEquals(resultadoGetEmprestimo.jsonPath().getString("firstName"), "henrique");
+    @Entao("ao enviar a requisicao valido o retorno do meu body")
+    public void aoEnviarARequisicaoValidoQueORetornoDoMeuBody() {
+        resultadoGetEmprestimo.then().log().all();
+        Assert.assertEquals(resultadoGetEmprestimo.jsonPath().getString(AtributosJsonEmprestimo.firstName), "[lucas]");
     }
 
     /////////////////@Teste003 @%ForwardCar/////////////////
 
-    @Dado("que realizo um metodo Get em Fabrica")
-    public void queRealizoUmMetodoGetEmFabrica() {
-        resultadoGetFabrica = Metodos.retornaFabrica();
-    }
-
-    @Entao("valido o tamanho da lista de fabricas que retorna no body do meu response")
-    public void validoOTamanhoDaListaDeFabricasQueRetornaNoBodyDoMeuResponse() {
-        Assert.assertEquals(resultadoGetFabrica.jsonPath().getInt(AtributosJsonFabrica.size), 9);
-    }
-
-    /////////////////@Teste004 @%ForwardCar/////////////////
-
     @Quando("crio um metodo Post em Login")
     public void crioUmMetodoPostEmLogin(DataTable dataTable) throws Exception {
         list = dataTable.asMaps(String.class, String.class);
-        Excel.getCellDadosCriandoLogin(list.get(0).get("planilha"), list.get(0).get("aba"));
-        resultadoPostLogin = Metodos.realizaLogin();
+        linhas = Excel.getCellDadosCriandoLogin(list.get(0).get("planilha"), list.get(0).get("aba"));
+        resultadoPostLogin = Metodos.realizaLogin(linhas);
     }
 
-    @Entao("valido que meu login foi realizado com sucesso")
-    public void validoQueMeuLoginFoiRealizadoComSucesso() {
-        Assert.assertEquals(resultadoPostLogin.jsonPath().getString(AtributosJsonLogin.userName), "lucassilvag");
-    }
-
-    /////////////////@Teste005 @%ForwardCar/////////////////
-
-    @Dado("que realizo um metodo Get em Modelo")
-    public void queRealizoUmMetodoGetEmModelo() {
+    @Entao("valido que meu login foi criado com sucesso")
+    public void validoQueMeuLoginFoiCriadoComSucesso() {
+        resultadoPostLogin.then().log().all();
+        Assert.assertEquals(resultadoPostLogin.jsonPath().getString(AtributosJsonLogin.userName), "lucasgsilva");
     }
 }

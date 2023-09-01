@@ -9,8 +9,9 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features ={
                 "src/test/resources/features/forwardCar.feature"
+                //"src/test/resources/features/forwardCar2.feature"
         },
-        tags = "@Teste002"
+        tags = "@Teste003"
 )
 public class RunnerAllTests {
 }

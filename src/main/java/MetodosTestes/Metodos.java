@@ -22,87 +22,97 @@ public class Metodos {
     private static List<DadosParaCriarEmprestimo> valorColunasEmprestimo = new ArrayList<>();
     private static HashMap<String, String> token = new HashMap<>();
 
-    public static Response retornaFabrica(){
+    public static Response retornaModelo() {
+        Response modelo =
+                given()
+                        .when()
+                        .get(uri + EndPoints.modelo)
+                        .then()
+                        .extract().response();
+
+        return modelo;
+    }
+
+    public static Response retornaFabrica() {
         Response fabrica =
                 given()
-                .when()
-                    .get(uri + EndPoints.fabrica)
-                .then()
-                    .extract().response();
+                        .when()
+                        .get(uri + EndPoints.fabrica)
+                        .then()
+                        .extract().response();
 
         return fabrica;
     }
 
-    public static Response geraRegistro(){
+    public static Response geraRegistro(int linhasDoArquivo) {
         Response registro =
                 given()
-                    .contentType(ContentType.JSON)
-                    .body(geraCorpoRegistro())
-                .when()
-                    .post(uri + EndPoints.registro)
-                .then()
-                    .extract().response();
+                        .contentType(ContentType.JSON)
+                        .body(geraCorpoRegistro(linhasDoArquivo))
+                        .when()
+                        .post(uri + EndPoints.registro)
+                        .then()
+                        .extract().response();
 
         return registro;
     }
 
-    public static Response realizaLogin(){
+    public static Response realizaLogin(int linhasDoArquivo) {
         Response login =
                 given()
-                    .contentType(ContentType.JSON)
-                    .body(geraCorpoLogin())
-                .when()
-                    .post(uri + EndPoints.login)
-                .then()
-                    .extract().response();
+                        .contentType(ContentType.JSON)
+                        .body(geraCorpoLogin(linhasDoArquivo))
+                        .when()
+                        .post(uri + EndPoints.login)
+                        .then()
+                        .extract().response();
 
         return login;
     }
 
-    public static Response recebeTokenERealizaPostEmprestimo(){
-        Response tokenCriado = realizaLogin();
+    public static Response recebeTokenERealizaPostEmprestimo(int linhasDoArquivo) {
+        Response tokenCriado = realizaLogin(linhasDoArquivo);
 
         token.put("Authorization", "Bearer " + tokenCriado.jsonPath().getString("access_token"));
 
         Response postEmprestimo =
-                            given()
-                                .headers(token)
-                                .body(geraCorpoEmprestimo())
-                                .contentType(ContentType.JSON)
-                            .when()
-                                .post(uri + EndPoints.emprestimo)
-                            .then()
-                                .extract().response();
+                given()
+                        .headers(token)
+                        .body(geraCorpoEmprestimo(linhasDoArquivo))
+                        .contentType(ContentType.JSON)
+                        .when()
+                        .post(uri + EndPoints.emprestimo)
+                        .then()
+                        .extract().response();
 
         return postEmprestimo;
     }
 
-    public static Response recebeEmprestimoCriadoERealizaGetEmprestimo(){
-        Response emprestimoCriado = recebeTokenERealizaPostEmprestimo();
-
-        token.put("Authorization", "Bearer " + emprestimoCriado.jsonPath().getString("access_token"));
+    public static Response recebeEmprestimoCriadoERealizaGetEmprestimo(int linhasDoArquivo) {
+        Response emprestimoCriado = recebeTokenERealizaPostEmprestimo(linhasDoArquivo);
 
         Response getEmprestimo =
-                            given()
-                                .headers(token)
-                            .when()
-                                .get(uri + EndPoints.emprestimo)
-                            .then()
-                                .extract().response();
+                given()
+                        .headers(token)
+                        .when()
+                        .get(uri + EndPoints.emprestimo)
+                        .then()
+                        .extract().response();
 
         return getEmprestimo;
     }
 
 
-    public static String geraCorpoRegistro(){
+    public static String geraCorpoRegistro(int linhasDoArquivo) {
         JSONObject registro = new JSONObject();
-        //DadosParaCriarRegistro registro1;
 
-        valorColunasRegistros.add(new DadosParaCriarRegistro(
-                ArquivoTxt.lerArquivo("FIRSTNAME_1", "Dados_Excel-criarRegistro.txt"),
-                ArquivoTxt.lerArquivo("LASTNAME_1", "Dados_Excel-criarRegistro.txt"),
-                ArquivoTxt.lerArquivo("USERNAME_1", "Dados_Excel-criarRegistro.txt"),
-                ArquivoTxt.lerArquivo("PASSWORD_1", "Dados_Excel-criarRegistro.txt")));
+        for (int i = 1; i <= linhasDoArquivo; i++) {
+            valorColunasRegistros.add(new DadosParaCriarRegistro(
+                    ArquivoTxt.lerArquivo("FIRSTNAME_" + i, "Dados_Excel-criarRegistro.txt"),
+                    ArquivoTxt.lerArquivo("LASTNAME_" + i, "Dados_Excel-criarRegistro.txt"),
+                    ArquivoTxt.lerArquivo("USERNAME_" + i, "Dados_Excel-criarRegistro.txt"),
+                    ArquivoTxt.lerArquivo("PASSWORD_" + i, "Dados_Excel-criarRegistro.txt")));
+        }
 
         for (int i = 0; i < valorColunasRegistros.size(); i++) {
             registro.put(AtributosJsonRegistro.firstName, valorColunasRegistros.get(i).getFirstName());
@@ -114,13 +124,14 @@ public class Metodos {
         return registro.toString();
     }
 
-    public static String geraCorpoLogin(){
+    public static String geraCorpoLogin(int linhasDoArquivo){
         JSONObject login = new JSONObject();
-        //DadosParaCriarLogin login1;
 
-        valorColunasLogin.add(new DadosParaCriarLogin(
-                ArquivoTxt.lerArquivo("USERNAME_1", "Dados_Excel-criarLogin.txt"),
-                ArquivoTxt.lerArquivo("PASSWORD_1", "Dados_Excel-criarLogin.txt")));
+        for (int i = 1; i <= linhasDoArquivo; i++){
+            valorColunasLogin.add(new DadosParaCriarLogin(
+                    ArquivoTxt.lerArquivo("USERNAME_" + i, "Dados_Excel-criarLogin.txt"),
+                    ArquivoTxt.lerArquivo("PASSWORD_" + i, "Dados_Excel-criarLogin.txt")));
+        }
 
         for (int i = 0; i < valorColunasLogin.size(); i++){
             login.put(AtributosJsonLogin.userName, valorColunasLogin.get(i).getUserName());
@@ -130,27 +141,29 @@ public class Metodos {
         return login.toString();
     }
 
-    public static String geraCorpoEmprestimo(){
+    public static String geraCorpoEmprestimo(int linhasDoArquivo){
         JSONObject emprestimo = new JSONObject();
-        //DadosParaCriarEmprestimo emprestimo1;
 
-        valorColunasEmprestimo.add(new DadosParaCriarEmprestimo(
-                ArquivoTxt.lerArquivo("FIRSTNAME_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("LASTNAME_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("ADDRESS1_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("CITY_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("STATE_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("ZIP_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("COUNTRY_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("DOB_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("SSN_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("EMPLOYER_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("PHONENUMBER_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("DURATIONOFJOB_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("INCOME_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("LOANTERM_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("LOANAMOUNT_1", "Dados_Excel-criarEmprestimo.txt"),
-                ArquivoTxt.lerArquivo("VALIDATEADDRESS_1", "Dados_Excel-criarEmprestimo.txt")));
+        for (int i = 1; i <= linhasDoArquivo; i++){
+            valorColunasEmprestimo.add(new DadosParaCriarEmprestimo(
+                    ArquivoTxt.lerArquivo("FIRSTNAME_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("LASTNAME_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("ADDRESS1_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("CITY_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("STATE_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("ZIP_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("COUNTRY_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("DOB_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("SSN_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("EMPLOYER_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("PHONENUMBER_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("DURATIONOFJOB_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("INCOME_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("LOANTERM_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("LOANAMOUNT_" + i, "Dados_Excel-criarEmprestimo.txt"),
+                    ArquivoTxt.lerArquivo("VALIDATEADDRESS_" + i, "Dados_Excel-criarEmprestimo.txt")));
+        }
+
 
         for (int i = 0; i < valorColunasEmprestimo.size(); i++){
             emprestimo.put(AtributosJsonEmprestimo.firstName, valorColunasEmprestimo.get(i).getFirstName());
